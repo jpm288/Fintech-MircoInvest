@@ -88,7 +88,7 @@ const Portfolio = () => {
     const handleBalanceUpdate = (event: CustomEvent) => {
       // In a real app, this would update individual investments
       // For now, we'll just update the total value
-      setTotalValue(event.detail.balance);
+      setTotalValue((event as CustomEvent).detail.balance);
     };
 
     window.addEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
@@ -300,7 +300,7 @@ const Portfolio = () => {
                     id="allocation"
                     type="number"
                     value={newAllocation}
-                    onChange={(e) => setNewAllocation(e.target.value)} // No longer need parseInt
+                    onChange={(e) => setNewAllocation(e.target.value)}
                     className="max-w-[120px]"
                     placeholder="0"
                   />
@@ -435,7 +435,7 @@ const Portfolio = () => {
                   id="amount"
                   type="number"
                   value={addFundsAmount}
-                  onChange={(e) => setAddFundsAmount(e.target.value)} // No longer need Number()
+                  onChange={(e) => setAddFundsAmount(e.target.value)}
                   className="max-w-[160px]"
                   placeholder="0"
                 />

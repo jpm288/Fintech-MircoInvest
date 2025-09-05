@@ -19,7 +19,7 @@ const BalanceCard = () => {
   // Update balance when balanceUpdated event is fired
   useEffect(() => {
     const handleBalanceUpdate = (event: CustomEvent) => {
-      setBalance(event.detail.balance);
+      setBalance((event as CustomEvent).detail.balance);
     };
 
     window.addEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
@@ -125,7 +125,7 @@ const BalanceCard = () => {
                   id="investAmount"
                   type="number"
                   value={investAmount}
-                  onChange={(e) => setInvestAmount(e.target.value)} // No longer need Math.max
+                  onChange={(e) => setInvestAmount(e.target.value)}
                   className="max-w-[160px]"
                   placeholder="0"
                 />
@@ -183,7 +183,7 @@ const BalanceCard = () => {
                   id="withdrawAmount"
                   type="number"
                   value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)} // No longer need Math.max/min
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
                   className="max-w-[160px]"
                   placeholder="0"
                 />
