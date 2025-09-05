@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +63,23 @@ const Transactions = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
   const [newRoundUpAmount, setNewRoundUpAmount] = useState(0);
 
+  // Update transactions when round-ups are adjusted
+  useEffect(() => {
+    const handleTransactionUpdate = (event: CustomEvent) => {
+      const updatedTransactions = transactions.map(transaction => 
+        transaction.id === event.detail.id 
+          ? { ...transaction, roundUp: event.detail.roundUp, status: "completed" } 
+          : transaction
+      );
+      setTransactions(updatedTransactions);
+    };
+
+    window.addEventListener('transactionUpdated', handleTransactionUpdate as EventListener);
+    return () => {
+      window.removeEventListener('transactionUpdated', handleTransactionUpdate as EventListener);
+    };
+  }, [transactions]);
+
   const handleSkipRoundUp = (id: number) => {
     setTransactions(transactions.map(transaction => 
       transaction.id === id 
@@ -79,11 +96,22 @@ const Transactions = () => {
 
   const saveAdjustedRoundUp = () => {
     if (selectedTransaction) {
-      setTransactions(transactions.map(transaction => 
+      const updatedTransactions = transactions.map(transaction => 
         transaction.id === selectedTransaction.id 
           ? { ...transaction, roundUp: newRoundUpAmount, status: "completed" } 
           : transaction
-      ));
+      );
+      setTransactions(updatedTransactions);
+      
+      // Dispatch event to update other components
+      const event = new CustomEvent('transactionUpdated', { 
+        detail: { 
+          id: selectedTransaction.id, 
+          roundUp: newRoundUpAmount 
+        } 
+      });
+      window.dispatchEvent(event);
+      
       setAdjustDialogOpen(false);
       setSelectedTransaction(null);
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -71,8 +71,21 @@ const Portfolio = () => {
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
   const [newAllocation, setNewAllocation] = useState(0);
   const [addFundsAmount, setAddFundsAmount] = useState(100);
+  const [totalValue, setTotalValue] = useState(1356.75);
 
-  const totalValue = investments.reduce((sum, investment) => sum + investment.value, 0);
+  // Update portfolio when balance changes
+  useEffect(() => {
+    const handleBalanceUpdate = (event: CustomEvent) => {
+      // In a real app, this would update individual investments
+      // For now, we'll just update the total value
+      setTotalValue(event.detail.balance);
+    };
+
+    window.addEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
+    return () => {
+      window.removeEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
+    };
+  }, []);
 
   const handleAdjustClick = (investment: any) => {
     setSelectedInvestment(investment);
@@ -103,7 +116,14 @@ const Portfolio = () => {
   };
 
   const confirmAddFunds = () => {
-    // In a real app, this would connect to a payment system
+    // Update total value
+    const newTotalValue = totalValue + addFundsAmount;
+    setTotalValue(newTotalValue);
+    
+    // Dispatch event to update other components
+    const event = new CustomEvent('balanceUpdated', { detail: { balance: newTotalValue } });
+    window.dispatchEvent(event);
+    
     showSuccess(`$${addFundsAmount} added to your portfolio`);
     setAddFundsDialogOpen(false);
     setAddFundsAmount(100);

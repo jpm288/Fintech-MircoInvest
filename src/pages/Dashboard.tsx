@@ -1,23 +1,40 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import InvestmentStats from "@/components/dashboard/InvestmentStats";
 import PortfolioChart from "@/components/dashboard/PortfolioChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Calendar, DollarSign } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   
-  const recentTransactions = [
+  const [recentTransactions, setRecentTransactions] = useState([
     { id: 1, name: "Coffee Shop", amount: 4.75, roundUp: 0.25, date: "2023-06-15" },
     { id: 2, name: "Grocery Store", amount: 32.40, roundUp: 0.60, date: "2023-06-14" },
     { id: 3, name: "Online Retail", amount: 45.99, roundUp: 0.01, date: "2023-06-13" },
     { id: 4, name: "Gas Station", amount: 38.50, roundUp: 1.50, date: "2023-06-12" },
-  ];
+  ]);
+
+  // Update transactions when round-ups are adjusted
+  useEffect(() => {
+    const handleTransactionUpdate = (event: CustomEvent) => {
+      const updatedTransactions = recentTransactions.map(transaction => 
+        transaction.id === event.detail.id 
+          ? { ...transaction, roundUp: event.detail.roundUp } 
+          : transaction
+      );
+      setRecentTransactions(updatedTransactions);
+    };
+
+    window.addEventListener('transactionUpdated', handleTransactionUpdate as EventListener);
+    return () => {
+      window.removeEventListener('transactionUpdated', handleTransactionUpdate as EventListener);
+    };
+  }, [recentTransactions]);
 
   const handleViewAll = () => {
     navigate("/transactions");

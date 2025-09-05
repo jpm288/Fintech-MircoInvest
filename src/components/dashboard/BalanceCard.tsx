@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Wallet, Plus, Minus } from "lucide-react";
+import { Wallet, Plus, Minus } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
 
 const BalanceCard = () => {
@@ -14,6 +14,7 @@ const BalanceCard = () => {
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   const [investAmount, setInvestAmount] = useState(50);
   const [withdrawAmount, setWithdrawAmount] = useState(25);
+  const [balance, setBalance] = useState(1248.75);
 
   const handleInvestNow = () => {
     setInvestDialogOpen(true);
@@ -24,14 +25,28 @@ const BalanceCard = () => {
   };
 
   const confirmInvestment = () => {
-    // In a real app, this would connect to an investment API
+    // Update balance
+    const newBalance = balance + investAmount;
+    setBalance(newBalance);
+    
+    // Dispatch event to update other components
+    const event = new CustomEvent('balanceUpdated', { detail: { balance: newBalance } });
+    window.dispatchEvent(event);
+    
     showSuccess(`$${investAmount} invested successfully`);
     setInvestDialogOpen(false);
     setInvestAmount(50);
   };
 
   const confirmWithdrawal = () => {
-    // In a real app, this would connect to a withdrawal API
+    // Update balance
+    const newBalance = balance - withdrawAmount;
+    setBalance(newBalance);
+    
+    // Dispatch event to update other components
+    const event = new CustomEvent('balanceUpdated', { detail: { balance: newBalance } });
+    window.dispatchEvent(event);
+    
     showSuccess(`$${withdrawAmount} withdrawal initiated`);
     setWithdrawDialogOpen(false);
     setWithdrawAmount(25);
@@ -47,7 +62,7 @@ const BalanceCard = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold mb-2">$1,248.75</div>
+          <div className="text-3xl font-bold mb-2">${balance.toFixed(2)}</div>
           <p className="text-blue-100 mb-4">+12.4% this month</p>
           <div className="flex gap-2">
             <Button 
@@ -79,7 +94,7 @@ const BalanceCard = () => {
           <div className="space-y-4">
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-medium mb-2">Available Balance</h3>
-              <p className="text-2xl font-bold">$1,248.75</p>
+              <p className="text-2xl font-bold">${balance.toFixed(2)}</p>
             </div>
             
             <div>
@@ -136,7 +151,7 @@ const BalanceCard = () => {
           <div className="space-y-4">
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-medium mb-2">Available Balance</h3>
-              <p className="text-2xl font-bold">$1,248.75</p>
+              <p className="text-2xl font-bold">${balance.toFixed(2)}</p>
             </div>
             
             <div>
