@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Settings } from "lucide-react";
+import { TrendingUp, Settings, Plus } from "lucide-react";
+import { showSuccess, showError } from "@/utils/toast";
 
 const Portfolio = () => {
   const [investments, setInvestments] = useState([
@@ -66,8 +67,10 @@ const Portfolio = () => {
   
   const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [addFundsDialogOpen, setAddFundsDialogOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
   const [newAllocation, setNewAllocation] = useState(0);
+  const [addFundsAmount, setAddFundsAmount] = useState(100);
 
   const totalValue = investments.reduce((sum, investment) => sum + investment.value, 0);
 
@@ -91,7 +94,19 @@ const Portfolio = () => {
       ));
       setAdjustDialogOpen(false);
       setSelectedInvestment(null);
+      showSuccess("Allocation updated successfully");
     }
+  };
+
+  const handleAddFunds = () => {
+    setAddFundsDialogOpen(true);
+  };
+
+  const confirmAddFunds = () => {
+    // In a real app, this would connect to a payment system
+    showSuccess(`$${addFundsAmount} added to your portfolio`);
+    setAddFundsDialogOpen(false);
+    setAddFundsAmount(100);
   };
 
   return (
@@ -124,7 +139,10 @@ const Portfolio = () => {
               <p className="text-xl font-bold text-green-600">+$124.75 (12.4%)</p>
             </div>
           </div>
-          <Button className="w-full">Add Funds</Button>
+          <Button className="w-full" onClick={handleAddFunds}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Funds
+          </Button>
         </CardContent>
       </Card>
 
@@ -287,6 +305,63 @@ const Portfolio = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Funds Dialog */}
+      <Dialog open={addFundsDialogOpen} onOpenChange={setAddFundsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Funds to Portfolio</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h3 className="font-medium mb-2">Linked Account</h3>
+              <p className="text-sm">Chase Bank ****4832</p>
+            </div>
+            
+            <div>
+              <Label htmlFor="amount">Amount to Add</Label>
+              <div className="flex items-center mt-2">
+                <span className="mr-2">$</span>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={addFundsAmount}
+                  onChange={(e) => setAddFundsAmount(Number(e.target.value))}
+                  className="max-w-[160px]"
+                />
+              </div>
+              <div className="flex space-x-2 mt-2">
+                {[50, 100, 250, 500].map((amount) => (
+                  <Button
+                    key={amount}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAddFundsAmount(amount)}
+                  >
+                    ${amount}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Investment Allocation</h4>
+              <p className="text-sm text-gray-500">
+                Your funds will be automatically allocated based on your current portfolio settings.
+              </p>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setAddFundsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={confirmAddFunds}>
+                Add Funds
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
