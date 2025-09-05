@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,6 +15,18 @@ const BalanceCard = () => {
   const [investAmount, setInvestAmount] = useState(50);
   const [withdrawAmount, setWithdrawAmount] = useState(25);
   const [balance, setBalance] = useState(1248.75);
+
+  // Update balance when balanceUpdated event is fired
+  useEffect(() => {
+    const handleBalanceUpdate = (event: CustomEvent) => {
+      setBalance(event.detail.balance);
+    };
+
+    window.addEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
+    return () => {
+      window.removeEventListener('balanceUpdated', handleBalanceUpdate as EventListener);
+    };
+  }, []);
 
   const handleInvestNow = () => {
     setInvestDialogOpen(true);
@@ -50,6 +62,10 @@ const BalanceCard = () => {
     showSuccess(`$${withdrawAmount} withdrawal initiated`);
     setWithdrawDialogOpen(false);
     setWithdrawAmount(25);
+  };
+
+  const handleMaxWithdrawal = () => {
+    setWithdrawAmount(balance);
   };
 
   return (
@@ -105,7 +121,7 @@ const BalanceCard = () => {
                   id="investAmount"
                   type="number"
                   value={investAmount}
-                  onChange={(e) => setInvestAmount(Number(e.target.value))}
+                  onChange={(e) => setInvestAmount(Math.max(0, Number(e.target.value)))}
                   className="max-w-[160px]"
                 />
               </div>
@@ -162,17 +178,25 @@ const BalanceCard = () => {
                   id="withdrawAmount"
                   type="number"
                   value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+                  onChange={(e) => setWithdrawAmount(Math.max(0, Math.min(balance, Number(e.target.value))))}
                   className="max-w-[160px]"
                 />
               </div>
               <div className="flex space-x-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleMaxWithdrawal}
+                >
+                  Max
+                </Button>
                 {[25, 50, 100, 250].map((amount) => (
                   <Button
                     key={amount}
                     variant="outline"
                     size="sm"
-                    onClick={() => setWithdrawAmount(amount)}
+                    onClick={() => setWithdrawAmount(Math.min(balance, amount))}
+                    disabled={balance < amount}
                   >
                     ${amount}
                   </Button>
@@ -191,7 +215,11 @@ const BalanceCard = () => {
               <Button variant="outline" onClick={() => setWithdrawDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={confirmWithdrawal}>
+              <Button 
+                variant="destructive" 
+                onClick={confirmWithdrawal}
+                disabled={withdrawAmount <= 0 || withdrawAmount > balance}
+              >
                 Withdraw Funds
               </Button>
             </div>
