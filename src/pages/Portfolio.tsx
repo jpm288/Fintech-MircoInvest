@@ -79,8 +79,8 @@ const Portfolio = () => {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addFundsDialogOpen, setAddFundsDialogOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
-  const [newAllocation, setNewAllocation] = useState(0);
-  const [addFundsAmount, setAddFundsAmount] = useState(100);
+  const [newAllocation, setNewAllocation] = useState(''); // Changed to string
+  const [addFundsAmount, setAddFundsAmount] = useState(''); // Changed to string
   const [totalValue, setTotalValue] = useState(1356.75);
 
   // Update portfolio when balance changes
@@ -99,7 +99,7 @@ const Portfolio = () => {
 
   const handleAdjustClick = (investment: any) => {
     setSelectedInvestment(investment);
-    setNewAllocation(investment.allocation);
+    setNewAllocation(investment.allocation.toString()); // Convert to string
     setAdjustDialogOpen(true);
   };
 
@@ -110,13 +110,16 @@ const Portfolio = () => {
 
   const saveAllocation = () => {
     if (selectedInvestment) {
+      // Convert string to number
+      const allocationValue = parseInt(newAllocation) || 0;
       setInvestments(investments.map(investment => 
         investment.id === selectedInvestment.id 
-          ? { ...investment, allocation: newAllocation } 
+          ? { ...investment, allocation: allocationValue } 
           : investment
       ));
       setAdjustDialogOpen(false);
       setSelectedInvestment(null);
+      setNewAllocation(''); // Reset to empty string
       showSuccess("Allocation updated successfully");
     }
   };
@@ -126,17 +129,19 @@ const Portfolio = () => {
   };
 
   const confirmAddFunds = () => {
+    // Convert string to number
+    const amount = parseFloat(addFundsAmount) || 0;
     // Update total value
-    const newTotalValue = totalValue + addFundsAmount;
+    const newTotalValue = totalValue + amount;
     setTotalValue(newTotalValue);
     
     // Dispatch event to update other components
     const event = new CustomEvent('balanceUpdated', { detail: { balance: newTotalValue } });
     window.dispatchEvent(event);
     
-    showSuccess(`$${addFundsAmount} added to your portfolio`);
+    showSuccess(`$${amount} added to your portfolio`);
     setAddFundsDialogOpen(false);
-    setAddFundsAmount(100);
+    setAddFundsAmount(''); // Reset to empty string
   };
 
   // Calculate performance comparison
@@ -294,11 +299,10 @@ const Portfolio = () => {
                   <Input
                     id="allocation"
                     type="number"
-                    min="0"
-                    max="100"
                     value={newAllocation}
-                    onChange={(e) => setNewAllocation(parseInt(e.target.value) || 0)}
+                    onChange={(e) => setNewAllocation(e.target.value)} // No longer need parseInt
                     className="max-w-[120px]"
+                    placeholder="0"
                   />
                   <span className="ml-2">%</span>
                 </div>
@@ -431,8 +435,9 @@ const Portfolio = () => {
                   id="amount"
                   type="number"
                   value={addFundsAmount}
-                  onChange={(e) => setAddFundsAmount(Number(e.target.value))}
+                  onChange={(e) => setAddFundsAmount(e.target.value)} // No longer need Number()
                   className="max-w-[160px]"
+                  placeholder="0"
                 />
               </div>
               <div className="flex space-x-2 mt-2">
@@ -441,7 +446,7 @@ const Portfolio = () => {
                     key={amount}
                     variant="outline"
                     size="sm"
-                    onClick={() => setAddFundsAmount(amount)}
+                    onClick={() => setAddFundsAmount(amount.toString())}
                   >
                     ${amount}
                   </Button>

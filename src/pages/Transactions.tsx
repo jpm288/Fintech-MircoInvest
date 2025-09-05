@@ -86,13 +86,13 @@ const Transactions = () => {
   ]);
   const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
-  const [newRoundUpAmount, setNewRoundUpAmount] = useState(0);
+  const [newRoundUpAmount, setNewRoundUpAmount] = useState(''); // Changed to string
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
-  const [amountRange, setAmountRange] = useState({ min: 0, max: 100 });
+  const [amountRange, setAmountRange] = useState({ min: '', max: '' }); // Changed to strings
   const [showFilters, setShowFilters] = useState(false);
 
   // Get unique categories for filter dropdown
@@ -125,15 +125,17 @@ const Transactions = () => {
 
   const handleAdjustRoundUp = (transaction: any) => {
     setSelectedTransaction(transaction);
-    setNewRoundUpAmount(transaction.roundUp);
+    setNewRoundUpAmount(transaction.roundUp.toString()); // Convert to string
     setAdjustDialogOpen(true);
   };
 
   const saveAdjustedRoundUp = () => {
     if (selectedTransaction) {
+      // Convert string to number
+      const roundUpValue = parseFloat(newRoundUpAmount) || 0;
       const updatedTransactions = transactions.map(transaction => 
         transaction.id === selectedTransaction.id 
-          ? { ...transaction, roundUp: newRoundUpAmount, status: "completed" } 
+          ? { ...transaction, roundUp: roundUpValue, status: "completed" } 
           : transaction
       );
       setTransactions(updatedTransactions);
@@ -142,13 +144,14 @@ const Transactions = () => {
       const event = new CustomEvent('transactionUpdated', { 
         detail: { 
           id: selectedTransaction.id, 
-          roundUp: newRoundUpAmount 
+          roundUp: roundUpValue 
         } 
       });
       window.dispatchEvent(event);
       
       setAdjustDialogOpen(false);
       setSelectedTransaction(null);
+      setNewRoundUpAmount(''); // Reset to empty string
     }
   };
 
@@ -167,8 +170,10 @@ const Transactions = () => {
       (dateRange.end === "" || transaction.date <= dateRange.end);
     
     // Amount range filter
-    const matchesAmountRange = transaction.amount >= amountRange.min && 
-      transaction.amount <= amountRange.max;
+    const minAmount = amountRange.min === '' ? 0 : parseFloat(amountRange.min);
+    const maxAmount = amountRange.max === '' ? Infinity : parseFloat(amountRange.max);
+    const matchesAmountRange = transaction.amount >= minAmount && 
+      transaction.amount <= maxAmount;
     
     return matchesSearch && matchesCategory && matchesDateRange && matchesAmountRange;
   });
@@ -177,7 +182,7 @@ const Transactions = () => {
     setSearchTerm("");
     setCategoryFilter("all");
     setDateRange({ start: "", end: "" });
-    setAmountRange({ min: 0, max: 100 });
+    setAmountRange({ min: '', max: '' }); // Reset to empty strings
   };
 
   return (
@@ -276,21 +281,21 @@ const Transactions = () => {
 
               {/* Amount Range */}
               <div>
-                <Label>Amount Range: ${amountRange.min} - ${amountRange.max}</Label>
+                <Label>Amount Range: ${amountRange.min || '0'} - ${amountRange.max || '100'}</Label>
                 <div className="flex items-center space-x-2 mt-1">
                   <Input
                     type="number"
                     placeholder="Min"
-                    value={amountRange.min || ""}
-                    onChange={(e) => setAmountRange({...amountRange, min: Number(e.target.value) || 0})}
+                    value={amountRange.min}
+                    onChange={(e) => setAmountRange({...amountRange, min: e.target.value})}
                     className="w-24"
                   />
                   <span className="text-gray-500">to</span>
                   <Input
                     type="number"
                     placeholder="Max"
-                    value={amountRange.max || ""}
-                    onChange={(e) => setAmountRange({...amountRange, max: Number(e.target.value) || 0})}
+                    value={amountRange.max}
+                    onChange={(e) => setAmountRange({...amountRange, max: e.target.value})}
                     className="w-24"
                   />
                 </div>
@@ -410,12 +415,10 @@ const Transactions = () => {
                   <Input
                     id="roundUpAmount"
                     type="number"
-                    step="0.01"
-                    min="0"
-                    max="1"
                     value={newRoundUpAmount}
-                    onChange={(e) => setNewRoundUpAmount(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setNewRoundUpAmount(e.target.value)}
                     className="max-w-[120px]"
+                    placeholder="0"
                   />
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter amount between $0.00 and $1.00</p>

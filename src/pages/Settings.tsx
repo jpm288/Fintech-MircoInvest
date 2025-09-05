@@ -28,7 +28,7 @@ const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [riskLevel, setRiskLevel] = useState(5);
   const [autoDeposit, setAutoDeposit] = useState(true);
-  const [depositAmount, setDepositAmount] = useState(25);
+  const [depositAmount, setDepositAmount] = useState(''); // Changed to string
   const [investmentAllocation, setInvestmentAllocation] = useState({
     etfs: 60,
     crypto: 30,
@@ -150,8 +150,9 @@ const Settings = () => {
                     id="deposit-amount"
                     type="number"
                     value={depositAmount}
-                    onChange={(e) => setDepositAmount(Number(e.target.value))}
+                    onChange={(e) => setDepositAmount(e.target.value)} // No longer need Number()
                     className="max-w-[120px]"
+                    placeholder="0"
                   />
                   <Button variant="outline" size="sm" className="ml-2" onClick={() => showSuccess("Deposit threshold updated")}>Save</Button>
                 </div>

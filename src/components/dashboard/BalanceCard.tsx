@@ -12,8 +12,8 @@ import { showSuccess } from "@/utils/toast";
 const BalanceCard = () => {
   const [investDialogOpen, setInvestDialogOpen] = useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
-  const [investAmount, setInvestAmount] = useState(50);
-  const [withdrawAmount, setWithdrawAmount] = useState(25);
+  const [investAmount, setInvestAmount] = useState(''); // Changed to string
+  const [withdrawAmount, setWithdrawAmount] = useState(''); // Changed to string
   const [balance, setBalance] = useState(1248.75);
 
   // Update balance when balanceUpdated event is fired
@@ -37,35 +37,39 @@ const BalanceCard = () => {
   };
 
   const confirmInvestment = () => {
+    // Convert string to number for calculations
+    const amount = parseFloat(investAmount) || 0;
     // Update balance
-    const newBalance = balance + investAmount;
+    const newBalance = balance + amount;
     setBalance(newBalance);
     
     // Dispatch event to update other components
     const event = new CustomEvent('balanceUpdated', { detail: { balance: newBalance } });
     window.dispatchEvent(event);
     
-    showSuccess(`$${investAmount} invested successfully`);
+    showSuccess(`$${amount} invested successfully`);
     setInvestDialogOpen(false);
-    setInvestAmount(50);
+    setInvestAmount(''); // Reset to empty string
   };
 
   const confirmWithdrawal = () => {
+    // Convert string to number for calculations
+    const amount = parseFloat(withdrawAmount) || 0;
     // Update balance
-    const newBalance = balance - withdrawAmount;
+    const newBalance = balance - amount;
     setBalance(newBalance);
     
     // Dispatch event to update other components
     const event = new CustomEvent('balanceUpdated', { detail: { balance: newBalance } });
     window.dispatchEvent(event);
     
-    showSuccess(`$${withdrawAmount} withdrawal initiated`);
+    showSuccess(`$${amount} withdrawal initiated`);
     setWithdrawDialogOpen(false);
-    setWithdrawAmount(25);
+    setWithdrawAmount(''); // Reset to empty string
   };
 
   const handleMaxWithdrawal = () => {
-    setWithdrawAmount(balance);
+    setWithdrawAmount(balance.toString());
   };
 
   return (
@@ -121,8 +125,9 @@ const BalanceCard = () => {
                   id="investAmount"
                   type="number"
                   value={investAmount}
-                  onChange={(e) => setInvestAmount(Math.max(0, Number(e.target.value)))}
+                  onChange={(e) => setInvestAmount(e.target.value)} // No longer need Math.max
                   className="max-w-[160px]"
+                  placeholder="0"
                 />
               </div>
               <div className="flex space-x-2 mt-2">
@@ -131,7 +136,7 @@ const BalanceCard = () => {
                     key={amount}
                     variant="outline"
                     size="sm"
-                    onClick={() => setInvestAmount(amount)}
+                    onClick={() => setInvestAmount(amount.toString())}
                   >
                     ${amount}
                   </Button>
@@ -178,8 +183,9 @@ const BalanceCard = () => {
                   id="withdrawAmount"
                   type="number"
                   value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(Math.max(0, Math.min(balance, Number(e.target.value))))}
+                  onChange={(e) => setWithdrawAmount(e.target.value)} // No longer need Math.max/min
                   className="max-w-[160px]"
+                  placeholder="0"
                 />
               </div>
               <div className="flex space-x-2 mt-2">
@@ -195,7 +201,7 @@ const BalanceCard = () => {
                     key={amount}
                     variant="outline"
                     size="sm"
-                    onClick={() => setWithdrawAmount(Math.min(balance, amount))}
+                    onClick={() => setWithdrawAmount(amount.toString())}
                     disabled={balance < amount}
                   >
                     ${amount}
@@ -218,7 +224,7 @@ const BalanceCard = () => {
               <Button 
                 variant="destructive" 
                 onClick={confirmWithdrawal}
-                disabled={withdrawAmount <= 0 || withdrawAmount > balance}
+                disabled={!withdrawAmount || parseFloat(withdrawAmount) <= 0 || parseFloat(withdrawAmount) > balance}
               >
                 Withdraw Funds
               </Button>
