@@ -15,8 +15,11 @@ import {
   ArrowRight,
   Building
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { showSuccess } from "@/utils/toast";
 
 const Onboarding = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [userInfo, setUserInfo] = useState({
     name: "",
@@ -24,6 +27,11 @@ const Onboarding = () => {
     password: ""
   });
   const [accountLinked, setAccountLinked] = useState(false);
+  const [preferences, setPreferences] = useState({
+    investmentFocus: "ETFs",
+    riskLevel: 50, // 0-100
+    roundUpsEnabled: true
+  });
 
   const totalSteps = 4;
 
@@ -49,6 +57,40 @@ const Onboarding = () => {
 
   const handleLinkAccount = () => {
     setAccountLinked(true);
+    showSuccess("Account linked successfully!");
+  };
+
+  const handleInvestmentFocusChange = (focus: string) => {
+    setPreferences(prev => ({
+      ...prev,
+      investmentFocus: focus
+    }));
+  };
+
+  const handleRiskLevelChange = (level: number) => {
+    setPreferences(prev => ({
+      ...prev,
+      riskLevel: level
+    }));
+  };
+
+  const handleRoundUpsToggle = () => {
+    setPreferences(prev => ({
+      ...prev,
+      roundUpsEnabled: !prev.roundUpsEnabled
+    }));
+  };
+
+  const handleGetStarted = () => {
+    // In a real app, you would save all the onboarding data here
+    showSuccess("Welcome to MicroInvest! Your preferences have been saved.");
+    navigate("/");
+  };
+
+  const getRiskLabel = (level: number) => {
+    if (level < 30) return "Conservative";
+    if (level < 70) return "Moderate";
+    return "Aggressive";
   };
 
   const renderStep = () => {
@@ -179,11 +221,19 @@ const Onboarding = () => {
               <div>
                 <h3 className="font-medium mb-3">Investment Focus</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="h-16 flex flex-col">
+                  <Button 
+                    variant={preferences.investmentFocus === "ETFs" ? "default" : "outline"} 
+                    className="h-16 flex flex-col"
+                    onClick={() => handleInvestmentFocusChange("ETFs")}
+                  >
                     <Coins className="h-5 w-5 mb-1" />
                     <span>ETFs</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex flex-col">
+                  <Button 
+                    variant={preferences.investmentFocus === "Crypto" ? "default" : "outline"} 
+                    className="h-16 flex flex-col"
+                    onClick={() => handleInvestmentFocusChange("Crypto")}
+                  >
                     <Coins className="h-5 w-5 mb-1" />
                     <span>Crypto</span>
                   </Button>
@@ -197,9 +247,34 @@ const Onboarding = () => {
                   <span>Moderate</span>
                   <span>Aggressive</span>
                 </div>
-                <div className="bg-gray-200 h-2 rounded-full">
-                  <div className="bg-blue-600 h-2 rounded-full w-1/2"></div>
+                <div className="bg-gray-200 h-2 rounded-full mb-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full" 
+                    style={{ width: `${preferences.riskLevel}%` }}
+                  ></div>
                 </div>
+                <div className="flex items-center justify-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mr-2"
+                    onClick={() => handleRiskLevelChange(Math.max(0, preferences.riskLevel - 10))}
+                  >
+                    -
+                  </Button>
+                  <span className="font-medium mx-2">{preferences.riskLevel}%</span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="ml-2"
+                    onClick={() => handleRiskLevelChange(Math.min(100, preferences.riskLevel + 10))}
+                  >
+                    +
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  Risk Profile: {getRiskLabel(preferences.riskLevel)}
+                </p>
               </div>
               
               <div>
@@ -207,7 +282,13 @@ const Onboarding = () => {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <div className="flex justify-between items-center">
                     <span>Enable Round-ups</span>
-                    <Badge variant="secondary">ON</Badge>
+                    <Button 
+                      variant={preferences.roundUpsEnabled ? "default" : "outline"}
+                      size="sm"
+                      onClick={handleRoundUpsToggle}
+                    >
+                      {preferences.roundUpsEnabled ? "ON" : "OFF"}
+                    </Button>
                   </div>
                   <p className="text-sm text-gray-600 mt-2">
                     Automatically invest spare change from purchases
@@ -261,7 +342,7 @@ const Onboarding = () => {
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
-              <Button className="w-full">
+              <Button className="w-full" onClick={handleGetStarted}>
                 Get Started
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
