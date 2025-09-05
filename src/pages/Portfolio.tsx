@@ -22,8 +22,8 @@ const Portfolio = () => {
       allocation: 35,
       color: "bg-blue-500",
       type: "ETF",
-      benchmark: "S&P 500", // Benchmark for comparison
-      benchmarkChange: 8.2 // Benchmark performance
+      benchmark: "S&P 500",
+      benchmarkChange: 8.2
     },
     {
       id: 2,
@@ -78,6 +78,7 @@ const Portfolio = () => {
   const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addFundsDialogOpen, setAddFundsDialogOpen] = useState(false);
+  const [rebalanceDialogOpen, setRebalanceDialogOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
   const [newAllocation, setNewAllocation] = useState(0);
   const [addFundsAmount, setAddFundsAmount] = useState(100);
@@ -139,6 +140,16 @@ const Portfolio = () => {
     setAddFundsAmount(100);
   };
 
+  const handleRebalance = () => {
+    setRebalanceDialogOpen(true);
+  };
+
+  const confirmRebalance = () => {
+    // In a real app, this would trigger a rebalancing algorithm
+    showSuccess("Portfolio rebalanced successfully");
+    setRebalanceDialogOpen(false);
+  };
+
   // Calculate performance comparison
   const getPerformanceComparison = (investment: any) => {
     const diff = investment.change - investment.benchmarkChange;
@@ -156,7 +167,7 @@ const Portfolio = () => {
             <h1 className="text-2xl font-bold">Portfolio</h1>
             <p className="text-gray-500 dark:text-gray-400">Your investment allocation and performance</p>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleRebalance}>
             <Settings className="h-4 w-4 mr-2" />
             Rebalance
           </Button>
@@ -437,6 +448,62 @@ const Portfolio = () => {
               </Button>
               <Button onClick={confirmAddFunds}>
                 Add Funds
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Rebalance Dialog */}
+      <Dialog open={rebalanceDialogOpen} onOpenChange={setRebalanceDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rebalance Portfolio</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+              <h3 className="font-medium mb-2">Current Allocation</h3>
+              <div className="space-y-2">
+                {investments.map((investment) => (
+                  <div key={investment.id} className="flex justify-between">
+                    <span className="text-sm">{investment.name}</span>
+                    <span className="text-sm font-medium">{investment.allocation}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Rebalancing Options</h4>
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full justify-between">
+                  <span>Optimize for Growth</span>
+                  <span className="text-green-600">+15.2% projected</span>
+                </Button>
+                <Button variant="outline" className="w-full justify-between">
+                  <span>Minimize Risk</span>
+                  <span className="text-blue-600">Low volatility</span>
+                </Button>
+                <Button variant="outline" className="w-full justify-between">
+                  <span>Target Date (2035)</span>
+                  <span className="text-purple-600">Balanced</span>
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+              <h4 className="font-medium mb-2 text-yellow-800 dark:text-yellow-200">Important Notice</h4>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                Rebalancing may incur transaction fees. Review the suggested changes before confirming.
+              </p>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setRebalanceDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={confirmRebalance}>
+                Rebalance Now
               </Button>
             </div>
           </div>
