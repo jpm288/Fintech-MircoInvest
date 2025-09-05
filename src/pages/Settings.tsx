@@ -14,7 +14,7 @@ import {
   Shield, 
   CreditCard, 
   User, 
-  Bank, 
+  Building, 
   Globe, 
   Moon,
   Smartphone,
@@ -176,7 +176,7 @@ const Settings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Bank className="h-5 w-5 mr-2" />
+              <Building className="h-5 w-5 mr-2" />
               Linked Accounts
             </CardTitle>
           </CardHeader>

@@ -13,7 +13,7 @@ import {
   Coins,
   CheckCircle,
   ArrowRight,
-  Bank
+  Building
 } from "lucide-react";
 
 const Onboarding = () => {
@@ -126,7 +126,7 @@ const Onboarding = () => {
         return (
           <div className="text-center">
             <div className="bg-green-100 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-              <Bank className="h-12 w-12 text-green-600" />
+              <Building className="h-12 w-12 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Link Your Account</h2>
             <p className="text-gray-600 mb-6">
@@ -140,7 +140,7 @@ const Onboarding = () => {
                   className="w-full"
                   variant="outline"
                 >
-                  <Bank className="h-4 w-4 mr-2" />
+                  <Building className="h-4 w-4 mr-2" />
                   Link Bank Account
                 </Button>
                 <p className="text-sm text-gray-500">or</p>

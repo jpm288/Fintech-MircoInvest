@@ -13,7 +13,8 @@ import {
   Phone, 
   Gift, 
   Share2,
-  LogOut
+  LogOut,
+  Lock
 } from "lucide-react";
 
 const Profile = () => {
