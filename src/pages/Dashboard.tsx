@@ -26,9 +26,6 @@ const Dashboard = () => {
           </div>
           <h1 className="text-2xl font-bold">MicroInvest</h1>
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8" />
-        </Button>
       </div>
 
       <div className="mb-6">
