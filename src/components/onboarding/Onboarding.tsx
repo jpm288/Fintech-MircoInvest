@@ -98,27 +98,27 @@ const Onboarding = () => {
       case 1:
         return (
           <div className="text-center">
-            <div className="bg-blue-100 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-              <Coins className="h-12 w-12 text-blue-600" />
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <Coins className="h-12 w-12 text-blue-600 dark:text-blue-400" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Welcome to MicroInvest!</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Automatically invest your spare change and grow your wealth effortlessly.
             </p>
-            <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-6">
               <h3 className="font-medium mb-2">How it works:</h3>
               <ul className="text-left text-sm space-y-1">
                 <li className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  Link your bank account or card
+                  <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
+                  <span className="text-gray-700 dark:text-gray-300">Link your bank account or card</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  We round up your purchases to the nearest dollar
+                  <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
+                  <span className="text-gray-700 dark:text-gray-300">We round up your purchases to the nearest dollar</span>
                 </li>
                 <li className="flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  Invest the spare change in ETFs and crypto
+                  <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mr-2" />
+                  <span className="text-gray-700 dark:text-gray-300">Invest the spare change in ETFs and crypto</span>
                 </li>
               </ul>
             </div>
@@ -137,6 +137,7 @@ const Onboarding = () => {
                   value={userInfo.name}
                   onChange={handleInputChange}
                   placeholder="Enter your full name"
+                  className="dark:bg-gray-800 dark:text-white dark:border-gray-700"
                 />
               </div>
               <div>
@@ -148,6 +149,7 @@ const Onboarding = () => {
                   value={userInfo.email}
                   onChange={handleInputChange}
                   placeholder="Enter your email"
+                  className="dark:bg-gray-800 dark:text-white dark:border-gray-700"
                 />
               </div>
               <div>
@@ -159,6 +161,7 @@ const Onboarding = () => {
                   value={userInfo.password}
                   onChange={handleInputChange}
                   placeholder="Create a password"
+                  className="dark:bg-gray-800 dark:text-white dark:border-gray-700"
                 />
               </div>
             </div>
@@ -167,11 +170,11 @@ const Onboarding = () => {
       case 3:
         return (
           <div className="text-center">
-            <div className="bg-green-100 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-              <Building className="h-12 w-12 text-green-600" />
+            <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <Building className="h-12 w-12 text-green-600 dark:text-green-400" />
             </div>
             <h2 className="text-2xl font-bold mb-2">Link Your Account</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Connect your bank account to start investing your spare change.
             </p>
             
@@ -185,7 +188,7 @@ const Onboarding = () => {
                   <Building className="h-4 w-4 mr-2" />
                   Link Bank Account
                 </Button>
-                <p className="text-sm text-gray-500">or</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">or</p>
                 <Button 
                   onClick={handleLinkAccount} 
                   className="w-full"
@@ -196,10 +199,10 @@ const Onboarding = () => {
                 </Button>
               </div>
             ) : (
-              <div className="bg-green-50 p-6 rounded-lg">
-                <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+              <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
+                <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">Account Linked Successfully!</h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   We've connected your account. You're ready to start investing.
                 </p>
               </div>
@@ -209,11 +212,11 @@ const Onboarding = () => {
       case 4:
         return (
           <div className="text-center">
-            <div className="bg-blue-100 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-              <Shield className="h-12 w-12 text-blue-600" />
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <Shield className="h-12 w-12 text-blue-600 dark:text-blue-400" />
             </div>
             <h2 className="text-2xl font-bold mb-4">Set Your Preferences</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               Customize how you want to invest your spare change.
             </p>
             
@@ -242,12 +245,12 @@ const Onboarding = () => {
               
               <div>
                 <h3 className="font-medium mb-3">Risk Level</h3>
-                <div className="flex justify-between text-sm text-gray-500 mb-2">
+                <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
                   <span>Conservative</span>
                   <span>Moderate</span>
                   <span>Aggressive</span>
                 </div>
-                <div className="bg-gray-200 h-2 rounded-full mb-2">
+                <div className="bg-gray-200 dark:bg-gray-700 h-2 rounded-full mb-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full" 
                     style={{ width: `${preferences.riskLevel}%` }}
@@ -257,7 +260,7 @@ const Onboarding = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="mr-2"
+                    className="mr-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
                     onClick={() => handleRiskLevelChange(Math.max(0, preferences.riskLevel - 10))}
                   >
                     -
@@ -266,20 +269,20 @@ const Onboarding = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="ml-2"
+                    className="ml-2 dark:bg-gray-800 dark:text-white dark:border-gray-700"
                     onClick={() => handleRiskLevelChange(Math.min(100, preferences.riskLevel + 10))}
                   >
                     +
                   </Button>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Risk Profile: {getRiskLabel(preferences.riskLevel)}
                 </p>
               </div>
               
               <div>
                 <h3 className="font-medium mb-3">Round-up Settings</h3>
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                   <div className="flex justify-between items-center">
                     <span>Enable Round-ups</span>
                     <Button 
@@ -290,7 +293,7 @@ const Onboarding = () => {
                       {preferences.roundUpsEnabled ? "ON" : "OFF"}
                     </Button>
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                     Automatically invest spare change from purchases
                   </p>
                 </div>
@@ -304,25 +307,29 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 p-4">
+      <Card className="w-full max-w-md dark:bg-gray-800">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Step {step} of {totalSteps}</CardTitle>
+              <CardTitle className="dark:text-white">Step {step} of {totalSteps}</CardTitle>
               <div className="flex mt-2">
                 {[...Array(totalSteps)].map((_, i) => (
                   <div 
                     key={i} 
                     className={`h-1 flex-1 mx-1 rounded-full ${
-                      i < step ? "bg-blue-600" : "bg-gray-200"
+                      i < step ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
                     }`}
                   ></div>
                 ))}
               </div>
             </div>
             {step > 1 && (
-              <Button variant="ghost" onClick={handleBack}>
+              <Button 
+                variant="ghost" 
+                onClick={handleBack}
+                className="dark:text-white dark:hover:bg-gray-700"
+              >
                 Back
               </Button>
             )}

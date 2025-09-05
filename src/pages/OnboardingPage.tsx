@@ -14,12 +14,12 @@ const OnboardingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-6">
         <Button 
           variant="ghost" 
           size="sm" 
-          className="mb-4"
+          className="mb-4 text-gray-700 dark:text-gray-300"
           onClick={handleGoBack}
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
