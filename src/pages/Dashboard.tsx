@@ -18,8 +18,20 @@ const Dashboard = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      {/* Logo Bar */}
+      <div className="flex items-center justify-between mb-6 pt-4">
+        <div className="flex items-center">
+          <div className="bg-blue-600 text-white rounded-lg w-10 h-10 flex items-center justify-center font-bold text-xl mr-3">
+            μI
+          </div>
+          <h1 className="text-2xl font-bold">MicroInvest</h1>
+        </div>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-8 h-8" />
+        </Button>
+      </div>
+
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Welcome back, Alex!</h1>
         <p className="text-gray-500">Here's what's happening with your investments</p>
       </div>
 
