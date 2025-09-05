@@ -7,14 +7,21 @@ import PortfolioChart from "@/components/dashboard/PortfolioChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Calendar, DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   const recentTransactions = [
     { id: 1, name: "Coffee Shop", amount: 4.75, roundUp: 0.25, date: "2023-06-15" },
     { id: 2, name: "Grocery Store", amount: 32.40, roundUp: 0.60, date: "2023-06-14" },
     { id: 3, name: "Online Retail", amount: 45.99, roundUp: 0.01, date: "2023-06-13" },
     { id: 4, name: "Gas Station", amount: 38.50, roundUp: 1.50, date: "2023-06-12" },
   ];
+
+  const handleViewAll = () => {
+    navigate("/transactions");
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -44,7 +51,7 @@ const Dashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Recent Round-ups</span>
-                <Button variant="ghost" size="sm">View All</Button>
+                <Button variant="ghost" size="sm" onClick={handleViewAll}>View All</Button>
               </CardTitle>
             </CardHeader>
             <CardContent>

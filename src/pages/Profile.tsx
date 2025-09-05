@@ -15,8 +15,29 @@ import {
   LogOut,
   Lock
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { showSuccess } from "@/utils/toast";
 
 const Profile = () => {
+  const navigate = useNavigate();
+
+  const handleUpdatePersonalInfo = () => {
+    showSuccess("Personal information update feature would open here");
+  };
+
+  const handleChangePassword = () => {
+    showSuccess("Password change feature would open here");
+  };
+
+  const handleShareFeedback = () => {
+    showSuccess("Feedback form would open here");
+  };
+
+  const handleLogOut = () => {
+    showSuccess("You have been logged out");
+    // In a real app, you would clear user session here
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
@@ -85,19 +106,35 @@ const Profile = () => {
             <CardTitle>Account Management</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-between">
+            <Button 
+              variant="outline" 
+              className="w-full justify-between"
+              onClick={handleUpdatePersonalInfo}
+            >
               Update Personal Information
               <User className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="w-full justify-between">
+            <Button 
+              variant="outline" 
+              className="w-full justify-between"
+              onClick={handleChangePassword}
+            >
               Change Password
               <Lock className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="w-full justify-between">
+            <Button 
+              variant="outline" 
+              className="w-full justify-between"
+              onClick={handleShareFeedback}
+            >
               Share Feedback
               <Share2 className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="w-full justify-between text-red-500 hover:text-red-600">
+            <Button 
+              variant="outline" 
+              className="w-full justify-between text-red-500 hover:text-red-600"
+              onClick={handleLogOut}
+            >
               Log Out
               <LogOut className="h-4 w-4" />
             </Button>
