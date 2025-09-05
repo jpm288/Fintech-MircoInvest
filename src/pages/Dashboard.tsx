@@ -29,7 +29,7 @@ const Dashboard = () => {
       <div className="flex items-center justify-between mb-6 pt-4">
         <div className="flex items-center">
           <div className="bg-blue-600 text-white rounded-lg w-10 h-10 flex items-center justify-center font-bold text-xl mr-3">
-            μI
+            M
           </div>
           <h1 className="text-2xl font-bold">MicroInvest</h1>
         </div>
