@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Settings, Plus, ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, Settings, Plus, ArrowUp, ArrowDown, Check } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
 
 const Portfolio = () => {
@@ -83,6 +83,7 @@ const Portfolio = () => {
   const [newAllocation, setNewAllocation] = useState(0);
   const [addFundsAmount, setAddFundsAmount] = useState(100);
   const [totalValue, setTotalValue] = useState(1356.75);
+  const [rebalanceOption, setRebalanceOption] = useState<string | null>(null);
 
   // Update portfolio when balance changes
   useEffect(() => {
@@ -144,10 +145,17 @@ const Portfolio = () => {
     setRebalanceDialogOpen(true);
   };
 
+  const selectRebalanceOption = (option: string) => {
+    setRebalanceOption(option);
+  };
+
   const confirmRebalance = () => {
-    // In a real app, this would trigger a rebalancing algorithm
-    showSuccess("Portfolio rebalanced successfully");
-    setRebalanceDialogOpen(false);
+    if (rebalanceOption) {
+      // In a real app, this would trigger a rebalancing algorithm
+      showSuccess(`Portfolio rebalanced with ${rebalanceOption} strategy`);
+      setRebalanceDialogOpen(false);
+      setRebalanceOption(null);
+    }
   };
 
   // Calculate performance comparison
@@ -158,6 +166,15 @@ const Portfolio = () => {
       isOutperforming: diff > 0
     };
   };
+
+  // Find top performing investment
+  const getTopPerformingInvestment = () => {
+    return investments.reduce((top, current) => 
+      current.change > top.change ? current : top
+    );
+  };
+
+  const topPerformer = getTopPerformingInvestment();
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -189,6 +206,14 @@ const Portfolio = () => {
               <p className="text-xl font-bold text-green-600 dark:text-green-400">+$124.75 (12.4%)</p>
             </div>
           </div>
+          <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="flex items-center">
+              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
+              <p className="text-sm">
+                <span className="font-medium">{topPerformer.name}</span> is your top performer with <span className="font-medium">+{topPerformer.change}%</span> growth
+              </p>
+            </div>
+          </div>
           <Button className="w-full" onClick={handleAddFunds}>
             <Plus className="h-4 w-4 mr-2" />
             Add Funds
@@ -204,6 +229,7 @@ const Portfolio = () => {
         
         {investments.map((investment) => {
           const performance = getPerformanceComparison(investment);
+          const isTopPerformer = investment.id === topPerformer.id;
           return (
             <Card key={investment.id}>
               <CardContent className="p-4">
@@ -228,6 +254,11 @@ const Portfolio = () => {
                         >
                           {performance.isOutperforming ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                           {Math.abs(performance.difference).toFixed(1)}% vs {investment.benchmark}
+                        </Badge>
+                      )}
+                      {isTopPerformer && (
+                        <Badge className="ml-2 bg-green-500 hover:bg-green-600">
+                          <Check className="h-3 w-3" />
                         </Badge>
                       )}
                     </div>
@@ -476,15 +507,27 @@ const Portfolio = () => {
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
               <h4 className="font-medium mb-2">Rebalancing Options</h4>
               <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-between">
+                <Button 
+                  variant={rebalanceOption === "growth" ? "default" : "outline"} 
+                  className="w-full justify-between"
+                  onClick={() => selectRebalanceOption("growth")}
+                >
                   <span>Optimize for Growth</span>
                   <span className="text-green-600">+15.2% projected</span>
                 </Button>
-                <Button variant="outline" className="w-full justify-between">
+                <Button 
+                  variant={rebalanceOption === "risk" ? "default" : "outline"} 
+                  className="w-full justify-between"
+                  onClick={() => selectRebalanceOption("risk")}
+                >
                   <span>Minimize Risk</span>
                   <span className="text-blue-600">Low volatility</span>
                 </Button>
-                <Button variant="outline" className="w-full justify-between">
+                <Button 
+                  variant={rebalanceOption === "target" ? "default" : "outline"} 
+                  className="w-full justify-between"
+                  onClick={() => selectRebalanceOption("target")}
+                >
                   <span>Target Date (2035)</span>
                   <span className="text-purple-600">Balanced</span>
                 </Button>
@@ -499,10 +542,16 @@ const Portfolio = () => {
             </div>
             
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setRebalanceDialogOpen(false)}>
+              <Button variant="outline" onClick={() => {
+                setRebalanceDialogOpen(false);
+                setRebalanceOption(null);
+              }}>
                 Cancel
               </Button>
-              <Button onClick={confirmRebalance}>
+              <Button 
+                onClick={confirmRebalance}
+                disabled={!rebalanceOption}
+              >
                 Rebalance Now
               </Button>
             </div>
