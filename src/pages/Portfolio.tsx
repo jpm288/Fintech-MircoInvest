@@ -1,14 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { TrendingUp, Settings } from "lucide-react";
 
 const Portfolio = () => {
-  const investments = [
+  const [investments, setInvestments] = useState([
     {
       id: 1,
       name: "Tech Growth ETF",
@@ -59,9 +62,37 @@ const Portfolio = () => {
       color: "bg-amber-500",
       type: "ETF"
     }
-  ];
+  ]);
+  
+  const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
+  const [newAllocation, setNewAllocation] = useState(0);
 
   const totalValue = investments.reduce((sum, investment) => sum + investment.value, 0);
+
+  const handleAdjustClick = (investment: any) => {
+    setSelectedInvestment(investment);
+    setNewAllocation(investment.allocation);
+    setAdjustDialogOpen(true);
+  };
+
+  const handleDetailsClick = (investment: any) => {
+    setSelectedInvestment(investment);
+    setDetailsDialogOpen(true);
+  };
+
+  const saveAllocation = () => {
+    if (selectedInvestment) {
+      setInvestments(investments.map(investment => 
+        investment.id === selectedInvestment.id 
+          ? { ...investment, allocation: newAllocation } 
+          : investment
+      ));
+      setAdjustDialogOpen(false);
+      setSelectedInvestment(null);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -130,13 +161,134 @@ const Portfolio = () => {
               </div>
               
               <div className="flex justify-end mt-3 space-x-2">
-                <Button variant="outline" size="sm">Adjust</Button>
-                <Button variant="outline" size="sm">Details</Button>
+                <Button variant="outline" size="sm" onClick={() => handleAdjustClick(investment)}>
+                  Adjust
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleDetailsClick(investment)}>
+                  Details
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Adjust Allocation Dialog */}
+      <Dialog open={adjustDialogOpen} onOpenChange={setAdjustDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adjust Allocation</DialogTitle>
+          </DialogHeader>
+          {selectedInvestment && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center">
+                  <div className={`w-3 h-3 rounded-full ${selectedInvestment.color} mr-3`}></div>
+                  <div>
+                    <h3 className="font-medium">{selectedInvestment.name}</h3>
+                    <p className="text-sm text-gray-500">{selectedInvestment.symbol}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">${selectedInvestment.value.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500">{selectedInvestment.allocation}%</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="allocation">New Allocation Percentage</Label>
+                <div className="flex items-center mt-2">
+                  <Input
+                    id="allocation"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={newAllocation}
+                    onChange={(e) => setNewAllocation(parseInt(e.target.value) || 0)}
+                    className="max-w-[120px]"
+                  />
+                  <span className="ml-2">%</span>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">Enter a value between 0% and 100%</p>
+              </div>
+              
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setAdjustDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={saveAllocation}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Investment Details Dialog */}
+      <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Investment Details</DialogTitle>
+          </DialogHeader>
+          {selectedInvestment && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center">
+                  <div className={`w-3 h-3 rounded-full ${selectedInvestment.color} mr-3`}></div>
+                  <div>
+                    <h3 className="font-medium">{selectedInvestment.name}</h3>
+                    <p className="text-sm text-gray-500">{selectedInvestment.symbol} • {selectedInvestment.type}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">${selectedInvestment.value.toFixed(2)}</p>
+                  <Badge variant={selectedInvestment.change >= 0 ? "secondary" : "destructive"}>
+                    {selectedInvestment.change >= 0 ? '+' : ''}{selectedInvestment.change}%
+                  </Badge>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-500">Allocation</p>
+                  <p className="font-medium">{selectedInvestment.allocation}%</p>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-500">Total Gain</p>
+                  <p className="font-medium">${(selectedInvestment.value * selectedInvestment.change / 100).toFixed(2)}</p>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Performance</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm">1 Month</span>
+                    <span className={selectedInvestment.change >= 0 ? "text-green-600" : "text-red-600"}>
+                      +{selectedInvestment.change}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">3 Months</span>
+                    <span className="text-green-600">+{selectedInvestment.change * 2.5}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">1 Year</span>
+                    <span className="text-green-600">+{selectedInvestment.change * 8}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
