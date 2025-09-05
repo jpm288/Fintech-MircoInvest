@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar, DollarSign, Settings } from "lucide-react";
 
 const Transactions = () => {
   const [roundUpsEnabled, setRoundUpsEnabled] = useState(true);
-  
-  const transactions = [
+  const [transactions, setTransactions] = useState([
     { 
       id: 1, 
       name: "Coffee Shop", 
@@ -57,7 +58,36 @@ const Transactions = () => {
       category: "Food & Drink",
       status: "skipped"
     },
-  ];
+  ]);
+  const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+  const [newRoundUpAmount, setNewRoundUpAmount] = useState(0);
+
+  const handleSkipRoundUp = (id: number) => {
+    setTransactions(transactions.map(transaction => 
+      transaction.id === id 
+        ? { ...transaction, status: "skipped" } 
+        : transaction
+    ));
+  };
+
+  const handleAdjustRoundUp = (transaction: any) => {
+    setSelectedTransaction(transaction);
+    setNewRoundUpAmount(transaction.roundUp);
+    setAdjustDialogOpen(true);
+  };
+
+  const saveAdjustedRoundUp = () => {
+    if (selectedTransaction) {
+      setTransactions(transactions.map(transaction => 
+        transaction.id === selectedTransaction.id 
+          ? { ...transaction, roundUp: newRoundUpAmount, status: "completed" } 
+          : transaction
+      ));
+      setAdjustDialogOpen(false);
+      setSelectedTransaction(null);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -137,13 +167,76 @@ const Transactions = () => {
               </div>
               
               <div className="flex justify-end mt-3 space-x-2">
-                <Button variant="outline" size="sm">Skip</Button>
-                <Button variant="outline" size="sm">Adjust</Button>
+                {transaction.status !== "skipped" && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleSkipRoundUp(transaction.id)}
+                  >
+                    Skip
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleAdjustRoundUp(transaction)}
+                >
+                  Adjust
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <Dialog open={adjustDialogOpen} onOpenChange={setAdjustDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Adjust Round-up Amount</DialogTitle>
+          </DialogHeader>
+          {selectedTransaction && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 className="font-medium">{selectedTransaction.name}</h3>
+                  <p className="text-sm text-gray-500">${selectedTransaction.amount.toFixed(2)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">+${selectedTransaction.roundUp.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500">Round-up</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="roundUpAmount">New Round-up Amount</Label>
+                <div className="flex items-center mt-2">
+                  <span className="mr-2">$</span>
+                  <Input
+                    id="roundUpAmount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="1"
+                    value={newRoundUpAmount}
+                    onChange={(e) => setNewRoundUpAmount(parseFloat(e.target.value) || 0)}
+                    className="max-w-[120px]"
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mt-1">Enter amount between $0.00 and $1.00</p>
+              </div>
+              
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setAdjustDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={saveAdjustedRoundUp}>
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
