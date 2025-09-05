@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Home, TrendingUp, Wallet, BarChart3, Settings, User, Moon, Sun, Globe } from "lucide-react";
+import { Home, TrendingUp, Wallet, BarChart3, Settings, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -10,7 +10,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
     // Check for saved theme preference
@@ -29,10 +28,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         document.documentElement.classList.add('dark');
       }
     }
-
-    // Check for saved language preference
-    const savedLanguage = localStorage.getItem('language') || 'en';
-    setLanguage(savedLanguage);
   }, []);
 
   const toggleTheme = () => {
@@ -45,12 +40,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  };
-
-  const toggleLanguage = () => {
-    const newLanguage = language === 'en' ? 'es' : 'en';
-    setLanguage(newLanguage);
-    localStorage.setItem('language', newLanguage);
   };
 
   const getActiveTab = () => {
@@ -79,24 +68,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Theme and Language Toggle */}
-      <div className="absolute top-4 right-4 flex space-x-2 z-10">
-        <button
-          onClick={toggleLanguage}
-          className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          aria-label="Toggle language"
-        >
-          <Globe className="h-5 w-5" />
-        </button>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          aria-label="Toggle theme"
-        >
-          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </button>
-      </div>
-
       <main className="flex-1 pb-20">
         {children}
       </main>
