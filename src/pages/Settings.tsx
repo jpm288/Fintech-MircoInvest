@@ -21,6 +21,7 @@ import {
   Mail,
   Lock
 } from "lucide-react";
+import { showSuccess } from "@/utils/toast";
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -36,6 +37,18 @@ const Settings = () => {
     "Growth",
     "Aggressive"
   ];
+
+  const handleEditPersonalInfo = () => {
+    showSuccess("Personal information updated successfully");
+  };
+
+  const handleChangePassword = () => {
+    showSuccess("Password changed successfully");
+  };
+
+  const handleManageSecurity = () => {
+    showSuccess("Security settings updated");
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -59,7 +72,7 @@ const Settings = () => {
                 <h3 className="font-medium">Personal Information</h3>
                 <p className="text-sm text-gray-500">Update your profile details</p>
               </div>
-              <Button variant="outline">Edit</Button>
+              <Button variant="outline" onClick={handleEditPersonalInfo}>Edit</Button>
             </div>
             
             <div className="flex items-center justify-between">
@@ -67,7 +80,7 @@ const Settings = () => {
                 <h3 className="font-medium">Security</h3>
                 <p className="text-sm text-gray-500">Password, 2FA, and more</p>
               </div>
-              <Button variant="outline">Manage</Button>
+              <Button variant="outline" onClick={handleManageSecurity}>Manage</Button>
             </div>
           </CardContent>
         </Card>
@@ -124,7 +137,7 @@ const Settings = () => {
                     onChange={(e) => setDepositAmount(Number(e.target.value))}
                     className="max-w-[120px]"
                   />
-                  <Button variant="outline" size="sm" className="ml-2">Save</Button>
+                  <Button variant="outline" size="sm" className="ml-2" onClick={() => showSuccess("Deposit threshold updated")}>Save</Button>
                 </div>
               </div>
             )}

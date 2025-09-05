@@ -3,7 +3,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   User, 
@@ -35,7 +34,6 @@ const Profile = () => {
             <div className="ml-4">
               <h2 className="text-xl font-bold">Alex Chen</h2>
               <p className="text-gray-500">Member since June 2023</p>
-              <Badge variant="secondary" className="mt-1">Premium Member</Badge>
             </div>
           </div>
           

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -17,16 +17,64 @@ import {
 import { Calendar, TrendingUp, DollarSign } from "lucide-react";
 
 const Analytics = () => {
-  // Mock data for investment growth
-  const growthData = [
-    { date: "Jan", value: 1000 },
-    { date: "Feb", value: 1120 },
-    { date: "Mar", value: 1250 },
-    { date: "Apr", value: 1320 },
-    { date: "May", value: 1480 },
-    { date: "Jun", value: 1650 },
-    { date: "Jul", value: 1820 },
-  ];
+  const [timeFrame, setTimeFrame] = useState("30d");
+  
+  // Mock data for different time frames
+  const getDataForTimeFrame = (frame: string) => {
+    switch (frame) {
+      case "7d":
+        return [
+          { date: "Mon", value: 1000 },
+          { date: "Tue", value: 1020 },
+          { date: "Wed", value: 1050 },
+          { date: "Thu", value: 1070 },
+          { date: "Fri", value: 1100 },
+          { date: "Sat", value: 1120 },
+          { date: "Sun", value: 1150 },
+        ];
+      case "90d":
+        return [
+          { date: "Apr", value: 1000 },
+          { date: "May", value: 1120 },
+          { date: "Jun", value: 1250 },
+          { date: "Jul", value: 1320 },
+          { date: "Aug", value: 1480 },
+          { date: "Sep", value: 1650 },
+        ];
+      case "1y":
+        return [
+          { date: "Jan", value: 1000 },
+          { date: "Feb", value: 1050 },
+          { date: "Mar", value: 1120 },
+          { date: "Apr", value: 1180 },
+          { date: "May", value: 1250 },
+          { date: "Jun", value: 1320 },
+          { date: "Jul", value: 1400 },
+          { date: "Aug", value: 1480 },
+          { date: "Sep", value: 1550 },
+          { date: "Oct", value: 1620 },
+          { date: "Nov", value: 1700 },
+          { date: "Dec", value: 1820 },
+        ];
+      case "all":
+        return [
+          { date: "Q1", value: 1000 },
+          { date: "Q2", value: 1250 },
+          { date: "Q3", value: 1480 },
+          { date: "Q4", value: 1820 },
+        ];
+      default: // 30d
+        return [
+          { date: "Jun 1", value: 1000 },
+          { date: "Jun 5", value: 1050 },
+          { date: "Jun 10", value: 1120 },
+          { date: "Jun 15", value: 1200 },
+          { date: "Jun 20", value: 1280 },
+          { date: "Jun 25", value: 1380 },
+          { date: "Jun 30", value: 1480 },
+        ];
+    }
+  };
 
   // Mock data for round-ups by category
   const categoryData = [
@@ -37,8 +85,19 @@ const Analytics = () => {
     { category: "Groceries", amount: 25.00 },
   ];
 
+  const growthData = getDataForTimeFrame(timeFrame);
   const totalGrowth = growthData[growthData.length - 1].value - growthData[0].value;
-  const growthPercentage = ((totalGrowth / growthData[0].value) * 100).toFixed(1);
+  const growthPercentage = growthData[0].value !== 0 
+    ? ((totalGrowth / growthData[0].value) * 100).toFixed(1)
+    : "0";
+
+  const timeFrameOptions = [
+    { value: "7d", label: "7 Days" },
+    { value: "30d", label: "30 Days" },
+    { value: "90d", label: "90 Days" },
+    { value: "1y", label: "1 Year" },
+    { value: "all", label: "All Time" },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -48,10 +107,18 @@ const Analytics = () => {
             <h1 className="text-2xl font-bold">Investment Analytics</h1>
             <p className="text-gray-500">Track your investment performance and trends</p>
           </div>
-          <Button variant="outline" size="sm">
-            <Calendar className="h-4 w-4 mr-2" />
-            Last 30 Days
-          </Button>
+          <div className="flex space-x-2">
+            {timeFrameOptions.map((option) => (
+              <Button
+                key={option.value}
+                variant={timeFrame === option.value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTimeFrame(option.value)}
+              >
+                {option.label}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
