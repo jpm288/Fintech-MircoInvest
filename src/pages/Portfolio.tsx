@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Settings, Plus } from "lucide-react";
+import { TrendingUp, Settings, Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
 
 const Portfolio = () => {
@@ -21,7 +21,9 @@ const Portfolio = () => {
       change: 12.4,
       allocation: 35,
       color: "bg-blue-500",
-      type: "ETF"
+      type: "ETF",
+      benchmark: "S&P 500", // Benchmark for comparison
+      benchmarkChange: 8.2 // Benchmark performance
     },
     {
       id: 2,
@@ -31,7 +33,9 @@ const Portfolio = () => {
       change: 8.2,
       allocation: 25,
       color: "bg-green-500",
-      type: "Crypto"
+      type: "Crypto",
+      benchmark: "Bitcoin",
+      benchmarkChange: 15.3
     },
     {
       id: 3,
@@ -41,7 +45,9 @@ const Portfolio = () => {
       change: 5.7,
       allocation: 20,
       color: "bg-emerald-500",
-      type: "ETF"
+      type: "ETF",
+      benchmark: "Global Clean Energy Index",
+      benchmarkChange: 7.1
     },
     {
       id: 4,
@@ -51,7 +57,9 @@ const Portfolio = () => {
       change: 3.1,
       allocation: 15,
       color: "bg-purple-500",
-      type: "ETF"
+      type: "ETF",
+      benchmark: "Healthcare Select Sector SPDR",
+      benchmarkChange: 4.8
     },
     {
       id: 5,
@@ -61,7 +69,9 @@ const Portfolio = () => {
       change: -1.2,
       allocation: 5,
       color: "bg-amber-500",
-      type: "ETF"
+      type: "ETF",
+      benchmark: "MSCI World Index",
+      benchmarkChange: 2.3
     }
   ]);
   
@@ -129,13 +139,22 @@ const Portfolio = () => {
     setAddFundsAmount(100);
   };
 
+  // Calculate performance comparison
+  const getPerformanceComparison = (investment: any) => {
+    const diff = investment.change - investment.benchmarkChange;
+    return {
+      difference: diff,
+      isOutperforming: diff > 0
+    };
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">Portfolio</h1>
-            <p className="text-gray-500">Your investment allocation and performance</p>
+            <p className="text-gray-500 dark:text-gray-400">Your investment allocation and performance</p>
           </div>
           <Button variant="outline" size="sm">
             <Settings className="h-4 w-4 mr-2" />
@@ -151,12 +170,12 @@ const Portfolio = () => {
         <CardContent>
           <div className="flex justify-between items-end mb-4">
             <div>
-              <p className="text-sm text-gray-500">Total Value</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
               <p className="text-3xl font-bold">${totalValue.toFixed(2)}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Total Gain</p>
-              <p className="text-xl font-bold text-green-600">+$124.75 (12.4%)</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Gain</p>
+              <p className="text-xl font-bold text-green-600 dark:text-green-400">+$124.75 (12.4%)</p>
             </div>
           </div>
           <Button className="w-full" onClick={handleAddFunds}>
@@ -167,48 +186,62 @@ const Portfolio = () => {
       </Card>
 
       <div className="space-y-4">
-        <div className="flex justify-between text-sm font-medium text-gray-500">
+        <div className="flex justify-between text-sm font-medium text-gray-500 dark:text-gray-400">
           <span>Asset</span>
           <span>Allocation</span>
         </div>
         
-        {investments.map((investment) => (
-          <Card key={investment.id}>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center">
-                  <div className={`w-3 h-3 rounded-full ${investment.color} mr-3`}></div>
-                  <div>
-                    <h3 className="font-medium">{investment.name}</h3>
-                    <p className="text-sm text-gray-500">{investment.symbol} • {investment.type}</p>
+        {investments.map((investment) => {
+          const performance = getPerformanceComparison(investment);
+          return (
+            <Card key={investment.id}>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center">
+                    <div className={`w-3 h-3 rounded-full ${investment.color} mr-3`}></div>
+                    <div>
+                      <h3 className="font-medium">{investment.name}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{investment.symbol} • {investment.type}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">${investment.value.toFixed(2)}</p>
+                    <div className="flex items-center">
+                      <Badge variant={investment.change >= 0 ? "secondary" : "destructive"}>
+                        {investment.change >= 0 ? '+' : ''}{investment.change}%
+                      </Badge>
+                      {performance.difference !== 0 && (
+                        <Badge 
+                          variant={performance.isOutperforming ? "secondary" : "destructive"}
+                          className="ml-2"
+                        >
+                          {performance.isOutperforming ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                          {Math.abs(performance.difference).toFixed(1)}% vs {investment.benchmark}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-medium">${investment.value.toFixed(2)}</p>
-                  <Badge variant={investment.change >= 0 ? "secondary" : "destructive"}>
-                    {investment.change >= 0 ? '+' : ''}{investment.change}%
-                  </Badge>
+                
+                <div className="flex items-center mt-2">
+                  <div className="w-full">
+                    <Progress value={investment.allocation} className="h-2" />
+                  </div>
+                  <span className="text-sm font-medium w-12 text-right">{investment.allocation}%</span>
                 </div>
-              </div>
-              
-              <div className="flex items-center mt-2">
-                <div className="w-full">
-                  <Progress value={investment.allocation} className="h-2" />
+                
+                <div className="flex justify-end mt-3 space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => handleAdjustClick(investment)}>
+                    Adjust
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => handleDetailsClick(investment)}>
+                    Details
+                  </Button>
                 </div>
-                <span className="text-sm font-medium w-12 text-right">{investment.allocation}%</span>
-              </div>
-              
-              <div className="flex justify-end mt-3 space-x-2">
-                <Button variant="outline" size="sm" onClick={() => handleAdjustClick(investment)}>
-                  Adjust
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => handleDetailsClick(investment)}>
-                  Details
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Adjust Allocation Dialog */}
@@ -219,17 +252,17 @@ const Portfolio = () => {
           </DialogHeader>
           {selectedInvestment && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center">
                   <div className={`w-3 h-3 rounded-full ${selectedInvestment.color} mr-3`}></div>
                   <div>
                     <h3 className="font-medium">{selectedInvestment.name}</h3>
-                    <p className="text-sm text-gray-500">{selectedInvestment.symbol}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedInvestment.symbol}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="font-medium">${selectedInvestment.value.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500">{selectedInvestment.allocation}%</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{selectedInvestment.allocation}%</p>
                 </div>
               </div>
               
@@ -247,7 +280,7 @@ const Portfolio = () => {
                   />
                   <span className="ml-2">%</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">Enter a value between 0% and 100%</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter a value between 0% and 100%</p>
               </div>
               
               <div className="flex justify-end space-x-2">
@@ -271,12 +304,12 @@ const Portfolio = () => {
           </DialogHeader>
           {selectedInvestment && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center">
                   <div className={`w-3 h-3 rounded-full ${selectedInvestment.color} mr-3`}></div>
                   <div>
                     <h3 className="font-medium">{selectedInvestment.name}</h3>
-                    <p className="text-sm text-gray-500">{selectedInvestment.symbol} • {selectedInvestment.type}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedInvestment.symbol} • {selectedInvestment.type}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -288,32 +321,57 @@ const Portfolio = () => {
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-500">Allocation</p>
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Allocation</p>
                   <p className="font-medium">{selectedInvestment.allocation}%</p>
                 </div>
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-500">Total Gain</p>
+                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Total Gain</p>
                   <p className="font-medium">${(selectedInvestment.value * selectedInvestment.change / 100).toFixed(2)}</p>
                 </div>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Performance</h4>
+              {/* Performance Comparison Section */}
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Performance Comparison</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Your Investment</span>
+                    <span className={selectedInvestment.change >= 0 ? "text-green-600 dark:text-green-400 font-medium" : "text-red-600 dark:text-red-400 font-medium"}>
+                      {selectedInvestment.change >= 0 ? '+' : ''}{selectedInvestment.change}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm">Benchmark ({selectedInvestment.benchmark})</span>
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      +{selectedInvestment.benchmarkChange}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                    <span className="text-sm font-medium">Performance Difference</span>
+                    <span className={getPerformanceComparison(selectedInvestment).isOutperforming ? "text-green-600 dark:text-green-400 font-medium" : "text-red-600 dark:text-red-400 font-medium"}>
+                      {getPerformanceComparison(selectedInvestment).isOutperforming ? '+' : ''}{getPerformanceComparison(selectedInvestment).difference.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Historical Performance</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm">1 Month</span>
-                    <span className={selectedInvestment.change >= 0 ? "text-green-600" : "text-red-600"}>
+                    <span className={selectedInvestment.change >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
                       +{selectedInvestment.change}%
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">3 Months</span>
-                    <span className="text-green-600">+{selectedInvestment.change * 2.5}%</span>
+                    <span className="text-green-600 dark:text-green-400">+{selectedInvestment.change * 2.5}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm">1 Year</span>
-                    <span className="text-green-600">+{selectedInvestment.change * 8}%</span>
+                    <span className="text-green-600 dark:text-green-400">+{selectedInvestment.change * 8}%</span>
                   </div>
                 </div>
               </div>
@@ -335,7 +393,7 @@ const Portfolio = () => {
             <DialogTitle>Add Funds to Portfolio</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h3 className="font-medium mb-2">Linked Account</h3>
               <p className="text-sm">Chase Bank ****4832</p>
             </div>
@@ -366,9 +424,9 @@ const Portfolio = () => {
               </div>
             </div>
             
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
               <h4 className="font-medium mb-2">Investment Allocation</h4>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Your funds will be automatically allocated based on your current portfolio settings.
               </p>
             </div>
