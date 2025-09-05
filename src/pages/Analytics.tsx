@@ -15,6 +15,13 @@ import {
   Bar
 } from "recharts";
 import { Calendar, TrendingUp, DollarSign } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Analytics = () => {
   const [timeFrame, setTimeFrame] = useState("30d");
@@ -103,23 +110,23 @@ const Analytics = () => {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Investment Analytics</h1>
-            <p className="text-gray-500">Track your investment performance and trends</p>
-          </div>
-          <div className="flex space-x-2">
-            {timeFrameOptions.map((option) => (
-              <Button
-                key={option.value}
-                variant={timeFrame === option.value ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTimeFrame(option.value)}
-              >
-                {option.label}
-              </Button>
-            ))}
+          <h1 className="text-2xl font-bold">Investment Analytics</h1>
+          <div className="w-32">
+            <Select value={timeFrame} onValueChange={setTimeFrame}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {timeFrameOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
+        <p className="text-gray-500">Track your investment performance and trends</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
