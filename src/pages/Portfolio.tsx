@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Settings, Plus, ArrowUp, ArrowDown, Check } from "lucide-react";
+import { TrendingUp, Plus, ArrowUp, ArrowDown, Check } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
 
 const Portfolio = () => {
@@ -78,12 +78,10 @@ const Portfolio = () => {
   const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addFundsDialogOpen, setAddFundsDialogOpen] = useState(false);
-  const [rebalanceDialogOpen, setRebalanceDialogOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState<any>(null);
   const [newAllocation, setNewAllocation] = useState(0);
   const [addFundsAmount, setAddFundsAmount] = useState(100);
   const [totalValue, setTotalValue] = useState(1356.75);
-  const [rebalanceOption, setRebalanceOption] = useState<string | null>(null);
 
   // Update portfolio when balance changes
   useEffect(() => {
@@ -141,23 +139,6 @@ const Portfolio = () => {
     setAddFundsAmount(100);
   };
 
-  const handleRebalance = () => {
-    setRebalanceDialogOpen(true);
-  };
-
-  const selectRebalanceOption = (option: string) => {
-    setRebalanceOption(option);
-  };
-
-  const confirmRebalance = () => {
-    if (rebalanceOption) {
-      // In a real app, this would trigger a rebalancing algorithm
-      showSuccess(`Portfolio rebalanced with ${rebalanceOption} strategy`);
-      setRebalanceDialogOpen(false);
-      setRebalanceOption(null);
-    }
-  };
-
   // Calculate performance comparison
   const getPerformanceComparison = (investment: any) => {
     const diff = investment.change - investment.benchmarkChange;
@@ -184,10 +165,6 @@ const Portfolio = () => {
             <h1 className="text-2xl font-bold">Portfolio</h1>
             <p className="text-gray-500 dark:text-gray-400">Your investment allocation and performance</p>
           </div>
-          <Button variant="outline" size="sm" onClick={handleRebalance}>
-            <Settings className="h-4 w-4 mr-2" />
-            Rebalance
-          </Button>
         </div>
       </div>
 
@@ -244,13 +221,16 @@ const Portfolio = () => {
                   <div className="text-right">
                     <p className="font-medium">${investment.value.toFixed(2)}</p>
                     <div className="flex items-center">
-                      <Badge variant={investment.change >= 0 ? "secondary" : "destructive"}>
+                      <Badge 
+                        variant="secondary"
+                        className={investment.change >= 0 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}
+                      >
                         {investment.change >= 0 ? '+' : ''}{investment.change}%
                       </Badge>
                       {performance.difference !== 0 && (
                         <Badge 
-                          variant={performance.isOutperforming ? "secondary" : "destructive"}
-                          className="ml-2"
+                          variant="secondary"
+                          className={performance.isOutperforming ? "ml-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "ml-2 bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}
                         >
                           {performance.isOutperforming ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                           {Math.abs(performance.difference).toFixed(1)}% vs {investment.benchmark}
@@ -356,7 +336,10 @@ const Portfolio = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-medium">${selectedInvestment.value.toFixed(2)}</p>
-                  <Badge variant={selectedInvestment.change >= 0 ? "secondary" : "destructive"}>
+                  <Badge 
+                    variant="secondary"
+                    className={selectedInvestment.change >= 0 ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"}
+                  >
                     {selectedInvestment.change >= 0 ? '+' : ''}{selectedInvestment.change}%
                   </Badge>
                 </div>
@@ -479,80 +462,6 @@ const Portfolio = () => {
               </Button>
               <Button onClick={confirmAddFunds}>
                 Add Funds
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Rebalance Dialog */}
-      <Dialog open={rebalanceDialogOpen} onOpenChange={setRebalanceDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rebalance Portfolio</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-              <h3 className="font-medium mb-2">Current Allocation</h3>
-              <div className="space-y-2">
-                {investments.map((investment) => (
-                  <div key={investment.id} className="flex justify-between">
-                    <span className="text-sm">{investment.name}</span>
-                    <span className="text-sm font-medium">{investment.allocation}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-              <h4 className="font-medium mb-2">Rebalancing Options</h4>
-              <div className="space-y-2">
-                <Button 
-                  variant={rebalanceOption === "growth" ? "default" : "outline"} 
-                  className="w-full justify-between"
-                  onClick={() => selectRebalanceOption("growth")}
-                >
-                  <span>Optimize for Growth</span>
-                  <span className="text-green-600">+15.2% projected</span>
-                </Button>
-                <Button 
-                  variant={rebalanceOption === "risk" ? "default" : "outline"} 
-                  className="w-full justify-between"
-                  onClick={() => selectRebalanceOption("risk")}
-                >
-                  <span>Minimize Risk</span>
-                  <span className="text-blue-600">Low volatility</span>
-                </Button>
-                <Button 
-                  variant={rebalanceOption === "target" ? "default" : "outline"} 
-                  className="w-full justify-between"
-                  onClick={() => selectRebalanceOption("target")}
-                >
-                  <span>Target Date (2035)</span>
-                  <span className="text-purple-600">Balanced</span>
-                </Button>
-              </div>
-            </div>
-            
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-              <h4 className="font-medium mb-2 text-yellow-800 dark:text-yellow-200">Important Notice</h4>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                Rebalancing may incur transaction fees. Review the suggested changes before confirming.
-              </p>
-            </div>
-            
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => {
-                setRebalanceDialogOpen(false);
-                setRebalanceOption(null);
-              }}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={confirmRebalance}
-                disabled={!rebalanceOption}
-              >
-                Rebalance Now
               </Button>
             </div>
           </div>
