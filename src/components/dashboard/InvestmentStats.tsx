@@ -18,7 +18,7 @@ const InvestmentStats = () => {
       // For now, we'll just update the total invested value
       setStats(prev => ({
         ...prev,
-        totalInvested: event.detail.balance
+        totalInvested: (event as CustomEvent).detail.balance
       }));
     };
 
