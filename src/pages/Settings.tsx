@@ -29,6 +29,11 @@ const Settings = () => {
   const [riskLevel, setRiskLevel] = useState(5);
   const [autoDeposit, setAutoDeposit] = useState(true);
   const [depositAmount, setDepositAmount] = useState(25);
+  const [investmentAllocation, setInvestmentAllocation] = useState({
+    etfs: 60,
+    crypto: 30,
+    bonds: 10
+  });
 
   const riskLabels = [
     "Conservative",
@@ -48,6 +53,17 @@ const Settings = () => {
 
   const handleManageSecurity = () => {
     showSuccess("Security settings updated");
+  };
+
+  const handleAllocationChange = (type: string, value: number) => {
+    setInvestmentAllocation(prev => ({
+      ...prev,
+      [type]: value
+    }));
+  };
+
+  const handleSaveAllocation = () => {
+    showSuccess("Investment allocation updated successfully");
   };
 
   return (
@@ -141,6 +157,59 @@ const Settings = () => {
                 </div>
               </div>
             )}
+            
+            <div>
+              <h3 className="font-medium mb-2">Investment Allocation</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm">ETFs</span>
+                    <span className="text-sm font-medium">{investmentAllocation.etfs}%</span>
+                  </div>
+                  <Slider 
+                    value={[investmentAllocation.etfs]} 
+                    onValueChange={(value) => handleAllocationChange('etfs', value[0])}
+                    max={100} 
+                    step={1} 
+                    className="w-full"
+                  />
+                </div>
+                
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm">Crypto</span>
+                    <span className="text-sm font-medium">{investmentAllocation.crypto}%</span>
+                  </div>
+                  <Slider 
+                    value={[investmentAllocation.crypto]} 
+                    onValueChange={(value) => handleAllocationChange('crypto', value[0])}
+                    max={100} 
+                    step={1} 
+                    className="w-full"
+                  />
+                </div>
+                
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm">Bonds</span>
+                    <span className="text-sm font-medium">{investmentAllocation.bonds}%</span>
+                  </div>
+                  <Slider 
+                    value={[investmentAllocation.bonds]} 
+                    onValueChange={(value) => handleAllocationChange('bonds', value[0])}
+                    max={100} 
+                    step={1} 
+                    className="w-full"
+                  />
+                </div>
+                
+                <div className="pt-2">
+                  <Button onClick={handleSaveAllocation} className="w-full">
+                    Save Allocation
+                  </Button>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
